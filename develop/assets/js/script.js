@@ -20,6 +20,7 @@ function createTaskCard(task) {
                 <h5 class="card-title">${task.name}</h5>
                 <p class="card-text">${task.description}</p>
                 <p class="card-text"><small class="text-muted">Due: ${task.dueDate}</small></p>
+                <button class="btn btn-danger delete-btn">Delete</button>
             </div>
         </div>
     `;
@@ -160,6 +161,7 @@ function handleDrop(event, ui) {
 
     // Save the updated task list to localStorage
     localStorage.setItem("tasks", JSON.stringify(taskList));
+
   }
 }
 
