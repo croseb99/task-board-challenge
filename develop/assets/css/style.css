@@ -16,6 +16,20 @@ body {
   }
 
   .lane.ui-droppable-hover {
-    background-color: #f0f8ff;
-    border: 2px dashed #007bff;
+    background-color: #e0ffe0;
+    border: 2px dashed #28a745;
   }
+
+  .task-card {
+    width: 100%; /* Ensure the task cards are properly positioned */
+    margin-bottom: 1rem; /* Set a default stacking context */
+    position: relative;
+}
+
+.ui-draggable-dragging {
+    width: 100% !important; /* Make the dragged element appear on top */
+    height: auto !important;
+    opacity: 0.8; /* Optional: Add slight transparency for better visual effect */
+    cursor: grabbing; /* Change the cursor while dragging */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

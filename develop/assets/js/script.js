@@ -52,11 +52,19 @@ function renderTaskList() {
   $(".task-card").draggable({
     helper: "clone",
     revert: "invalid",
+    zIndex: 1000,
+    start: function (event, ui) {
+        $(this).css("visibility", "hidden");
+    },
+    stop: function (event, ui) {
+        $(this).css("visibility", "visible");
+    }
   });
 
   // Make lanes droppable
   $(".lane").droppable({
     accept: ".task-card",
+    hoverClass: "ui-droppable-hover",
     drop: handleDrop,
   });
 }
@@ -91,10 +99,7 @@ function handleAddTask(event) {
   // save updated task list to localStorage
   localStorage.setItem("tasks", JSON.stringify(taskList));
 
-  console.log(JSON.parse(localStorage.getItem("tasks")));
-
-  // render task list
-  renderTaskList();
+  $("#todo-cards").append(createTaskCard(newTask));
 
   // clear form fields
   $("#task-name").val("");
@@ -103,6 +108,18 @@ function handleAddTask(event) {
 
   //close the modal
   $("#formModal").modal("hide");
+
+  $(".task-card").draggable({
+    helper: "clone",
+    revert: "invalid",
+    zIndex: 1000,
+    start: function (event, ui) {
+      $(this).css("visibility", "hidden");
+    },
+    stop: function (event, ui) {
+      $(this).css("visibility", "visible");
+    },
+  });
 }
 
 // Todo: create a function to handle deleting a task
@@ -122,35 +139,27 @@ function handleDeleteTask(event) {
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-  const droppedTaskCard = ui.draggable;
-  const taskId = parseInt(droppedTaskCard.data("id"));
-  const newLane = $(event.target).attr("id");
+  const draggedElement = ui.draggable;
+  const taskId = parseInt(draggedElement.data("id"));
+  
+  $(this).append(draggedElement);
 
   // Find the new status lane from the droppable element
-  //const newLane = $(event.target).data('lane');
+  const newLane = $(this).data("lane");
 
-  let newStatus = "";
-  if (newLane === "to-do") {
-    newStatus = "To Do";
-  } else if (newLane === "in-progress") {
-    newStatus = "In Progress";
-  } else if (newLane === "done") {
-    newStatus = "Done";
-  }
-
-  // find task in task list and update its status
+  // Update the task's status
   const task = taskList.find((task) => task.id === taskId);
   if (task) {
-    task.status = newLane;
-    localStorage.setItem("tasks", JSON.stringify(taskList)); // Correctly update task list
+    if (newLane === "to-do") {
+      task.status = "To Do";
+    } else if (newLane === "in-progress") {
+      task.status = "In Progress";
+    } else if (newLane === "done") {
+      task.status = "Done";
+    }
 
-    //task.status = newLane;
-
-    // save updated task list to localStorage
-    //localStorage.setItem("tasks", JSON.stringify(taskList));
-
-    // optionally, re-render the task list to reflect the status change
-    renderTaskList();
+    // Save the updated task list to localStorage
+    localStorage.setItem("tasks", JSON.stringify(taskList));
   }
 }
 
@@ -158,7 +167,7 @@ function handleDrop(event, ui) {
 $(document).ready(function () {
   // initialize the nextId from localStorage if available
   nextId = JSON.parse(localStorage.getItem("nextId") || 1); // default to 1 if not found
-  //localStorage.getItem("nextId") ? JSON.parse(localStorage.getItem("nextId")) : 1;
+
 
   // initialize the taskList from localStorage if available
   taskList = localStorage.getItem("tasks")
